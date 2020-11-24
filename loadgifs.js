@@ -89,11 +89,12 @@
      */
     async function apiCall(event) {
         event.preventDefault();
+        const text = DOM.INPUT.value;
 
-        setInterval(async () => {
-            const text = DOM.INPUT.value;
 
-            if (!cache.hasOwnProperty(text)) {
+        if (!cache.hasOwnProperty(text)) {
+
+            setTimeout(async () => {
                 const response = await fetch(getGifUrl(text));
                 const data = await response.json();
 
@@ -105,15 +106,15 @@
                 clearGifs();
                 renderTitle(text);
                 renderGifs(gifs);
-            } else {
-                const gifs = getData(text);
+                }, 500)
+        } else {
+            const gifs = getData(text);
 
-                clearGifs();
-                renderTitle(text);
-                renderGifs(gifs);
+            clearGifs();
+            renderTitle(text);
+            renderGifs(gifs);
             }
-        }, 500);
-    }
+        }
 
     DOM.FORM.addEventListener('submit', apiCall)
 })();

@@ -83,18 +83,27 @@
         DOM.GIFS.innerHTML = '';
     }
 
+    function debounce(f, t) {
+        return function (args) {
+            let previousCall = this.lastCall;
+            this.lastCall = Date.now();
+            if (previousCall && ((this.lastCall - previousCall) <= t)) {
+                clearTimeout(this.lastCallTimer);
+            }
+            this.lastCallTimer = setTimeout(() => f(args), t);
+        }
+    }
+
     /**
      * Метод apiCall подсоединяется к серверу по указанному url, получает от него данные и отрисовывает их в браузере
      * @returns {Promise<void>}
      */
     async function apiCall(event) {
-        event.preventDefault();
         const text = DOM.INPUT.value;
 
 
         if (!cache.hasOwnProperty(text)) {
 
-            setTimeout(async () => {
                 const response = await fetch(getGifUrl(text));
                 const data = await response.json();
 
@@ -106,7 +115,6 @@
                 clearGifs();
                 renderTitle(text);
                 renderGifs(gifs);
-                }, 500)
         } else {
             const gifs = getData(text);
 
@@ -116,7 +124,7 @@
             }
         }
 
-    DOM.FORM.addEventListener('submit', apiCall)
+    DOM.INPUT.addEventListener('keydown', debounce(apiCall, 500))
 })();
 
 
